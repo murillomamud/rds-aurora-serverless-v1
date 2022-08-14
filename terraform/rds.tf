@@ -9,8 +9,6 @@ resource "aws_rds_cluster" "default" {
   backup_retention_period = 7
   apply_immediately = true
   skip_final_snapshot     = true
-  publicly_accessible     = true
-
 
   scaling_configuration {
   auto_pause               = true
