@@ -1,0 +1,56 @@
+name: Default Pipeline
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: [ ubuntu-latest ]
+
+    steps:
+      - uses: actions/checkout@v3
+  
+  terraform:
+    runs-on: [ ubuntu-latest ]
+    container:
+      image: hashicorp/terraform:1.1.9
+    needs: [setup]
+    env:
+      TF_VAR_db_password: ${{ secrets.AURORA_PASSWORD }}
+
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: Get AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+
+      - name: Verify Terraform version
+        working-directory: terraform
+        run: terraform --version
+
+      - name: Terraform init
+        working-directory: terraform
+        run: | 
+          terraform init 
+
+      - name: Terraform validation
+        working-directory: terraform
+        run: terraform validate 
+      
+      - name: Terraform plan
+        working-directory: terraform
+        run: terraform plan --out=tfplan --var-file=vars/${{ needs.setup.outputs.env_name }}.tfvars
+
+      # - name: Terraform destroy
+      #   working-directory: terraform
+      #   run: terraform destroy --var-file=vars/${{ needs.setup.outputs.env_name }}.tfvars -lock=false -auto-approve
+
+      - name: Terraform apply
+        working-directory: terraform
+        run: terraform apply --var-file=vars/${{ needs.setup.outputs.env_name }}.tfvars      
