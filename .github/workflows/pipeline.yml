@@ -46,7 +46,7 @@ jobs:
       
       - name: Terraform plan
         working-directory: terraform
-        run: terraform plan --out=tfplan --var-file=vars/${{ needs.setup.outputs.env_name }}.tfvars
+        run: terraform plan 
 
       # - name: Terraform destroy
       #   working-directory: terraform
@@ -54,4 +54,4 @@ jobs:
 
       - name: Terraform apply
         working-directory: terraform
-        run: terraform apply --var-file=vars/${{ needs.setup.outputs.env_name }}.tfvars      
+        run: terraform apply
