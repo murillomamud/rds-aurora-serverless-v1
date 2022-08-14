@@ -48,9 +48,9 @@ jobs:
         working-directory: terraform
         run: terraform plan 
 
-      # - name: Terraform destroy
-      #   working-directory: terraform
-      #   run: terraform destroy --var-file=vars/${{ needs.setup.outputs.env_name }}.tfvars -lock=false -auto-approve
+      - name: Terraform destroy
+        working-directory: terraform
+        run: terraform destroy -auto-approve
 
       - name: Terraform apply
         working-directory: terraform
